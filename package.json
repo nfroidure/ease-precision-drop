@@ -23,7 +23,7 @@
     }
   },
   "name": "ease-precision-drop",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Use ease functions to drop precision for given value intervals.",
   "keywords": [
     "precision",
