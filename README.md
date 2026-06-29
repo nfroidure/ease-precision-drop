@@ -14,7 +14,90 @@
 
 ## Usage
 
-[See tests.](./src/index.test.ts)
+### Install
+
+```bash
+npm install ease-precision-drop
+```
+
+### Basic example
+
+```ts
+import { computePrecisionDropFromInterval } from 'ease-precision-drop';
+
+const precision = computePrecisionDropFromInterval(
+  12,
+  {
+    lower: {
+      hardLimit: 10,
+      softLimit: 20,
+      decreaseFunction: 'linear',
+    },
+    higher: {
+      softLimit: 50,
+      hardLimit: 70,
+      decreaseFunction: 'easeOutQuad',
+    },
+  },
+  100,
+);
+
+// 20: precision is gradually reduced when value gets close to limits
+```
+
+### API
+
+#### `computePrecisionDrop(value, rule, kind, defaultPrecision)`
+
+Computes precision for one side of an interval:
+
+- `kind: 'lower'`: precision drops from `defaultPrecision` at `softLimit` to `0`
+  at `hardLimit`
+- `kind: 'higher'`: precision drops from `defaultPrecision` at `softLimit` to
+  `0` at `hardLimit`
+
+`rule` shape:
+
+- `softLimit` (`number`): where precision starts to decrease
+- `hardLimit` (`number`): where precision reaches `0`
+- `decreaseFunction`: one of:
+  - `linear`
+  - `easeInSine`, `easeOutSine`, `easeInOutSine`
+  - `easeInQuad`, `easeOutQuad`, `easeInOutQuad`
+  - `easeInCubic`, `easeOutCubic`, `easeInOutCubic`
+  - `stepStart`, `stepMiddle`, `stepEnd`
+
+#### `computePrecisionDropFromInterval(value, rules, defaultPrecision)`
+
+Convenience wrapper to apply both interval sides:
+
+- `rules.lower` is applied when `value <= lower.softLimit`
+- `rules.higher` is applied when `value >= higher.softLimit`
+- returns `defaultPrecision` when the value is in the middle range
+
+### More examples
+
+```ts
+import { computePrecisionDrop } from 'ease-precision-drop';
+
+// Lower boundary: value below hardLimit => no precision
+computePrecisionDrop(
+  8,
+  { hardLimit: 10, softLimit: 20, decreaseFunction: 'linear' },
+  'lower',
+  100,
+); // 0
+
+// Higher boundary: value above hardLimit => no precision
+computePrecisionDrop(
+  75,
+  { softLimit: 50, hardLimit: 70, decreaseFunction: 'linear' },
+  'higher',
+  100,
+); // 0
+```
+
+See also tests in [`src/index.test.ts`](./src/index.test.ts).
 
 [//]: # (::contents:end)
 
